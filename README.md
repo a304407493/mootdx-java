@@ -1,64 +1,89 @@
 # MooTDX Java
 
-[![Java 8](https://img.shields.io/badge/Java-8-blue.svg)](https://www.oracle.com/java/technologies/javase/javase8-archive-downloads.html)
-[![Maven](https://img.shields.io/badge/Maven-3.8+-green.svg)](https://maven.apache.org/)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Java](https://img.shields.io/badge/Java-8%2B-blue)](https://www.oracle.com/java/technologies/)
+[![Maven](https://img.shields.io/badge/Maven-3.6%2B-green)](https://maven.apache.org/)
+[![License](https://img.shields.io/badge/License-MIT-yellow)](LICENSE)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-2.7%2B-brightgreen)](https://spring.io/projects/spring-boot)
 
-Java implementation of [mootdx](https://github.com/bopo/mootdx) - A TongDaXin (通达信) stock data reader library.
+> Java 实现的通达信(TDX)股票数据读取库，支持本地数据文件解析和在线实时行情获取。
 
-## Overview
+## 📖 项目简介
 
-MooTDX Java provides a complete Java implementation of the Python mootdx library, enabling:
+MooTDX Java 是一个功能完整的通达信数据访问库，提供以下核心能力：
 
-- **Local Data Reading**: Parse `.day`, `.lc1`, `.lc5` binary files from TDX installation
-- **Online Quotes**: Connect to TDX servers via TCP for real-time data
-- **Financial Reports**: Download and parse company financial statements
-- **Price Adjustments**: Apply forward (前复权) and backward (后复权) adjustments
+- 📁 **本地数据读取** - 解析通达信安装目录下的 `.day`, `.lc1`, `.lc5` 等二进制数据文件
+- 🌐 **在线行情获取** - 通过 TCP 连接通达信服务器获取实时行情数据
+- 📊 **K线数据支持** - 支持日线、分钟线、5分钟线等多种K线数据获取
+- 📈 **财务数据下载** - 下载和解析上市公司财务报表数据
+- 🔄 **复权计算** - 支持前复权、后复权价格计算
+- 💾 **数据导入** - 支持通达信本地数据导入到数据库
+- 🗄️ **数据库管理** - 内置数据库管理功能，支持SQL执行
+- 🏷️ **标签管理** - 股票标签和题材管理功能
+- 📝 **持仓笔记** - 股票持仓笔记记录功能
 
-## Features
+## 🏗️ 项目架构
 
-| Feature | Python (mootdx) | Java (mootdx-java) |
-|---------|-----------------|-------------------|
-| Local File Reader | ✅ `Reader` | ✅ `TdxFileReader` |
-| TCP Quotes | ✅ `Quotes` | ✅ `TdxQuoteClient` |
-| Financial Data | ✅ `Affair` | ✅ `AffairService` |
-| CLI Tool | ✅ `mootdx` | ✅ `MootdxCommand` |
-| Price Adjustment | ✅ Built-in | ✅ `AdjustmentUtils` |
-| Caching | ✅ `lru_cache` | ✅ `CacheManager` (Caffeine) |
-| DataFrame | ✅ pandas | ✅ `List<BarData>` + Tablesaw |
+```
+mootdx-java/
+├── mootdx-core/          # 核心模块 - TDX数据读取和协议实现
+│   ├── reader/           # 本地文件读取器
+│   ├── quotes/           # 在线行情客户端
+│   ├── affair/           # 财务数据服务
+│   ├── cli/              # 命令行工具
+│   ├── model/            # 数据模型
+│   ├── protocol/         # TDX协议实现
+│   └── cache/            # 缓存管理
+├── mootdx-server/        # 服务端模块 - Spring Boot Web服务
+│   ├── controller/       # REST API控制器
+│   ├── service/          # 业务服务层
+│   ├── dto/              # 数据传输对象
+│   └── config/           # 配置类
+└── mootdx-web/           # 前端模块 - Vue.js管理界面
+    ├── src/views/        # 页面组件
+    └── src/api/          # API接口
+```
 
-## Requirements
+## 🚀 快速开始
 
-- Java 8 or higher
-- Maven 3.6 or higher
-- TDX installation (for local data reading)
-- Internet connection (for online quotes)
+### 环境要求
 
-## Quick Start
+- Java 8 或更高版本
+- Maven 3.6 或更高版本
+- Node.js 14+ (前端开发)
+- 通达信安装目录 (用于本地数据读取)
 
-### 1. Build the Project
+### 构建项目
 
 ```bash
-git clone https://github.com/mootdx/mootdx-java.git
+# 克隆仓库
+git clone https://github.com/a304407493/mootdx-java.git
 cd mootdx-java
-mvn clean package -DskipTests
+
+# 构建核心模块
+mvn clean install -pl mootdx-core -am
+
+# 构建服务端
+mvn clean package -pl mootdx-server -am
 ```
 
-### 2. Use as Library
+### 启动服务
 
-Add to your `pom.xml`:
+```bash
+# 启动后端服务
+cd mootdx-server
+mvn spring-boot:run
 
-```xml
-<dependency>
-    <groupId>com.mootdx</groupId>
-    <artifactId>mootdx-java</artifactId>
-    <version>1.0.0</version>
-</dependency>
+# 启动前端 (开发模式)
+cd mootdx-web
+npm install
+npm run serve
 ```
 
-### 3. Basic Usage
+访问 http://localhost:8080 查看管理界面
 
-#### Read Local Daily Data
+## 📦 核心功能
+
+### 1. 本地数据读取
 
 ```java
 import com.mootdx.reader.TdxFileReader;
@@ -66,320 +91,215 @@ import com.mootdx.model.BarData;
 import java.nio.file.Paths;
 import java.util.List;
 
-// Create reader
+// 创建读取器
 TdxFileReader reader = new TdxFileReader(Paths.get("C:/new_tdx"));
 
-// Read daily data
+// 读取日线数据
 List<BarData> dailyData = reader.readDaily("600036");
 
-for (BarData bar : dailyData) {
-    System.out.printf("%s: Open=%s, High=%s, Low=%s, Close=%s%n",
-        bar.getDateString(), bar.getOpen(), bar.getHigh(), 
-        bar.getLow(), bar.getClose());
-}
+// 读取1分钟数据
+List<BarData> minute1Data = reader.readMinute1("600036");
+
+// 读取5分钟数据
+List<BarData> minute5Data = reader.readMinute5("600036");
 ```
 
-#### Get Real-Time Quote
+### 2. 在线行情获取
 
 ```java
 import com.mootdx.quotes.TdxQuoteClient;
 import com.mootdx.model.Quote;
 
-// Connect to server (auto-select best)
+// 创建客户端（自动选择最优服务器）
 TdxQuoteClient client = TdxQuoteClient.factory("std", true, true);
 
-// Get quote
+// 获取实时行情
 Quote quote = client.getQuote("600036");
+System.out.println("当前价格: " + quote.getLastPrice());
+System.out.println("涨跌幅: " + quote.getChangePercent() + "%");
 
-System.out.println("Price: " + quote.getLastPrice());
-System.out.println("Change: " + quote.getChangePercent() + "%");
-System.out.println("Best Bid: " + quote.getBestBidPrice());
-System.out.println("Best Ask: " + quote.getBestAskPrice());
+// 获取K线数据
+List<BarData> kline = client.getDaily("600036", 100);  // 最近100天日线
+List<BarData> minute1 = client.getMinute1("600036", 100);  // 最近100条1分钟线
 ```
 
-#### Get K-Line Data from Server
+### 3. 财务数据下载
 
 ```java
-// Get daily K-line (last 100 days)
-List<BarData> daily = client.getDaily("600036", 100);
+import com.mootdx.affair.AffairService;
 
-// Get 1-minute K-line
-List<BarData> minute1 = client.getMinute1("600036", 100);
+AffairService affair = new AffairService();
 
-// Get 5-minute K-line
-List<BarData> minute5 = client.getMinute5("600036", 100);
+// 列出可用文件
+List<String> files = affair.listFiles();
+
+// 下载财务报表
+affair.downloadReport("gpcw20231231.zip", Paths.get("./downloads"));
 ```
 
-### 4. Use CLI Tool
+### 4. 复权计算
+
+```java
+import com.mootdx.utils.AdjustmentUtils;
+
+// 前复权
+List<BarData> qfqData = AdjustmentUtils.toQfq(rawData);
+
+// 后复权
+List<BarData> hfqData = AdjustmentUtils.toHfq(rawData);
+```
+
+## 🛠️ 命令行工具
 
 ```bash
-# Read local daily data
-java -jar target/mootdx-java-1.0.0.jar reader daily -s 600036 -d C:/new_tdx
+# 读取本地日线数据
+java -jar mootdx-core.jar reader daily -s 600036 -d C:/new_tdx
 
-# Get real-time quote
-java -jar target/mootdx-java-1.0.0.jar quotes get -s 600036
+# 获取实时行情
+java -jar mootdx-core.jar quotes get -s 600036
 
-# Get K-line data
-java -jar target/mootdx-java-1.0.0.jar quotes bars -s 600036 -f 9 -n 100
+# 获取K线数据
+java -jar mootdx-core.jar quotes bars -s 600036 -f 9 -n 100
 
-# List available stocks
-java -jar target/mootdx-java-1.0.0.jar reader list -d C:/new_tdx
+# 查找最优服务器
+java -jar mootdx-core.jar bestip
 
-# Find best server
-java -jar target/mootdx-java-1.0.0.jar bestip
-
-# List financial files
-java -jar target/mootdx-java-1.0.0.jar affair list
+# 列出财务文件
+java -jar mootdx-core.jar affair list
 ```
 
-## API Reference
+## 📚 文档
 
-### TdxFileReader (Local Data)
+- [项目概述与快速开始](docs/入门/01-项目概述与快速开始.md)
+- [数据源配置详解](docs/入门/02-数据源配置详解.md)
+- [查询模式与降级策略](docs/入门/03-查询模式与降级策略.md)
+- [多源融合与数据合并](docs/入门/04-多源融合与数据合并.md)
+- [高级配置与最佳实践](docs/入门/05-高级配置与最佳实践.md)
+- [K线图功能完整复刻指南](docs/K线图功能完整复刻指南.md)
+- [缓存管理功能完整复刻指南](docs/缓存管理功能完整复刻指南.md)
+- [题材检索功能完整复刻指南](docs/题材检索功能完整复刻指南.md)
+- [通达信本地数据导入指南](docs/通达信本地数据导入指南.md)
 
-| Method | Description | Python Equivalent |
-|--------|-------------|-------------------|
-| `readDaily(symbol)` | Read daily K-line | `reader.daily(symbol)` |
-| `readMinute(symbol, period)` | Read minute K-line | `reader.minute(symbol)` |
-| `readMinute1(symbol)` | Read 1-minute data | - |
-| `readMinute5(symbol)` | Read 5-minute data | - |
-| `getLastNBars(symbol, n)` | Get last N bars | - |
-| `getDateRange(symbol, start, end)` | Get date range | - |
-| `listAvailableStocks()` | List all stocks | - |
+## 🔌 API 接口
 
-### TdxQuoteClient (Online Data)
+服务端提供完整的 REST API：
 
-| Method | Description | Python Equivalent |
-|--------|-------------|-------------------|
-| `getQuote(symbol)` | Get real-time quote | `client.get_quote(symbol)` |
-| `getQuotes(symbols)` | Get multiple quotes | `client.get_quotes(list)` |
-| `getKLine(symbol, freq, offset)` | Get K-line data | `client.bars(symbol, freq, offset)` |
-| `getDaily(symbol, offset)` | Get daily data | `client.daily(symbol, offset)` |
-| `getMinute1(symbol, offset)` | Get 1-min data | `client.minute(symbol)` |
-| `getMinuteData(symbol)` | Get intraday data | `client.minute(symbol)` |
-| `getStockList(market)` | Get stock list | `client.get_stock_list(market)` |
-| `selectBestServer(servers)` | Find best server | `client.best_ip()` |
+| 接口 | 说明 |
+|------|------|
+| `GET /api/kline/{symbol}` | 获取K线数据 |
+| `GET /api/quote/{symbol}` | 获取实时行情 |
+| `GET /api/stock/list` | 获取股票列表 |
+| `POST /api/import/tdx` | 导入通达信数据 |
+| `POST /api/db/execute` | 执行SQL |
+| `GET /api/server/list` | 获取服务器列表 |
+| `GET /api/theme/list` | 获取题材列表 |
+| `GET /api/tag/list` | 获取标签列表 |
 
-### AffairService (Financial Data)
+## 📊 数据模型
 
-| Method | Description | Python Equivalent |
-|--------|-------------|-------------------|
-| `listFiles()` | List available files | `Affair.files()` |
-| `listFiles(year)` | List files by year | - |
-| `downloadReport(filename, dir)` | Download file | `Affair.fetch(downdir, filename)` |
-| `downloadAll(dir)` | Download all files | `Affair.parse(downdir)` |
-| `parseReport(zipFile)` | Parse ZIP file | `Affair.parse(downdir)` |
-
-### AdjustmentUtils (Price Adjustments)
-
-| Method | Description | Python Equivalent |
-|--------|-------------|-------------------|
-| `toQfq(bars, xdxrs)` | Forward adjustment | Built-in |
-| `toQfq(bars)` | Forward (simplified) | Built-in |
-| `toHfq(bars, xdxrs)` | Backward adjustment | Built-in |
-| `toHfq(bars)` | Backward (simplified) | Built-in |
-
-## Data Models
-
-### BarData
-
+### BarData (K线数据)
 ```java
-public record BarData(
-    int date,           // YYYYMMDD or YYYYMMDDHHMM
-    BigDecimal open,    // Opening price
-    BigDecimal high,    // Highest price
-    BigDecimal low,     // Lowest price
-    BigDecimal close,   // Closing price
-    long volume,        // Trading volume
-    BigDecimal amount   // Trading amount
-) {}
+public class BarData {
+    private int date;           // 日期 (YYYYMMDD)
+    private int time;           // 时间 (HHMM)
+    private BigDecimal open;    // 开盘价
+    private BigDecimal high;    // 最高价
+    private BigDecimal low;     // 最低价
+    private BigDecimal close;   // 收盘价
+    private long volume;        // 成交量
+    private BigDecimal amount;  // 成交额
+}
 ```
 
-### Quote
-
+### Quote (实时行情)
 ```java
-public record Quote(
-    String code,              // Stock code
-    String name,              // Stock name
-    int market,               // Market (0=Shenzhen, 1=Shanghai)
-    BigDecimal lastPrice,     // Latest price
-    BigDecimal open,          // Opening price
-    BigDecimal high,          // Highest price
-    BigDecimal low,           // Lowest price
-    BigDecimal prevClose,     // Previous close
-    long volume,              // Volume
-    BigDecimal amount,        // Amount
-    BigDecimal[] bidPrices,   // Bid prices (5 levels)
-    BigDecimal[] askPrices,   // Ask prices (5 levels)
-    long[] bidVolumes,        // Bid volumes
-    long[] askVolumes,        // Ask volumes
-    LocalDate date,           // Trading date
-    LocalTime time            // Trading time
-) {}
+public class Quote {
+    private String code;              // 股票代码
+    private String name;              // 股票名称
+    private BigDecimal lastPrice;     // 最新价
+    private BigDecimal open;          // 开盘价
+    private BigDecimal high;          // 最高价
+    private BigDecimal low;           // 最低价
+    private BigDecimal prevClose;     // 昨收价
+    private long volume;              // 成交量
+    private BigDecimal amount;        // 成交额
+    private BigDecimal changePercent; // 涨跌幅
+}
 ```
 
-### StockMeta
+## ⚙️ 配置说明
 
-```java
-public record StockMeta(
-    String code,    // Stock code
-    String name,    // Stock name (Chinese)
-    int market      // Market code
-) {}
-```
+### 通达信服务器列表
 
-## Python vs Java API Comparison
-
-| Python | Java | Notes |
-|--------|------|-------|
-| `reader.daily('600036')` | `reader.readDaily("600036")` | Returns `List<BarData>` instead of DataFrame |
-| `reader.minute('600036')` | `reader.readMinute("600036", 1)` | Period parameter required |
-| `client.bars('600036', 9, 10)` | `client.getKLine("600036", 9, 10)` | Same parameters |
-| `client.get_quote('600036')` | `client.getQuote("600036")` | Returns `Quote` object |
-| `client.stocks(1)` | `client.getStockList(1)` | Returns `List<StockMeta>` |
-| `Affair.files()` | `affair.listFiles()` | Returns `List<String>` |
-| `Affair.fetch('tmp', 'file.zip')` | `affair.downloadReport("file.zip", path)` | Path object instead of string |
-
-## Binary File Format
-
-### .day File Structure (32 bytes/record)
-
-```
-Offset  Size  Type    Description
-0       4     int     Date (YYYYMMDD)
-4       4     int     Open price * 100
-8       4     int     High price * 100
-12      4     int     Low price * 100
-16      4     int     Close price * 100
-20      4     float   Amount (yuan)
-24      4     int     Volume (shares)
-28      4     int     Reserved / Previous close
-```
-
-### TCP Protocol
-
-```
-Packet Structure:
-[0-1]   : Length (2 bytes, little-endian)
-[2]     : Checksum (1 byte)
-[3]     : Header (1 byte, 0x01)
-[4-5]   : Command (2 bytes)
-[6...]  : Payload (variable)
-
-Commands:
-0x0451  : Get stock list
-0x052d  : Get K-line data
-0x053e  : Get real-time quote
-0x053c  : Get minute data
-0x0801  : Heartbeat
-```
-
-## Configuration
-
-### Server List
-
-Default TDX servers (port 7709):
+默认服务器 (端口 7709):
 - 119.147.212.81
 - 221.231.141.60
 - 58.63.254.191
 - 115.238.90.165
 - 14.215.128.18
 
-### Cache Configuration
+### 配置文件
 
-```java
-// Custom cache settings
-CacheManager cache = new CacheManager(
-    60,   // stock list expiry (minutes)
-    60,   // quote expiry (seconds)
-    30    // historical data expiry (minutes)
-);
+`mootdx-core/src/main/resources/tdx-config.properties`:
+```properties
+# 通达信安装路径
+tdx.path=C:/new_tdx
+
+# 服务器配置
+tdx.server.host=119.147.212.81
+tdx.server.port=7709
+
+# 缓存配置
+cache.expire.minutes=60
 ```
 
-## Dependencies
-
-| Library | Version | Purpose |
-|---------|---------|---------|
-| Netty | 4.1.100.Final | TCP communication |
-| picocli | 4.7.5 | CLI framework |
-| Jackson | 2.15.2 | JSON processing |
-| Caffeine | 3.1.8 | Caching |
-| Tablesaw | 0.43.1 | Data analysis (optional) |
-| JUnit 5 | 5.10.0 | Testing |
-
-## Project Structure
-
-```
-mootdx-java/
-├── pom.xml
-├── README.md
-└── src/
-    ├── main/java/com/mootdx/
-    │   ├── reader/
-    │   │   └── TdxFileReader.java
-    │   ├── quotes/
-    │   │   └── TdxQuoteClient.java
-    │   ├── affair/
-    │   │   └── AffairService.java
-    │   ├── cli/
-    │   │   └── MootdxCommand.java
-    │   ├── model/
-    │   │   ├── BarData.java
-    │   │   ├── Quote.java
-    │   │   ├── StockMeta.java
-    │   │   ├── MinuteData.java
-    │   │   └── FinancialReport.java
-    │   ├── utils/
-    │   │   ├── ByteUtils.java
-    │   │   ├── TdxUtils.java
-    │   │   └── AdjustmentUtils.java
-    │   ├── cache/
-    │   │   └── CacheManager.java
-    │   ├── protocol/
-    │   │   └── TdxProtocol.java
-    │   └── exception/
-    │       ├── TdxException.java
-    │       ├── FileFormatException.java
-    │       ├── NetworkException.java
-    │       └── ProtocolException.java
-    └── test/java/com/mootdx/
-        ├── reader/TdxFileReaderTest.java
-        ├── utils/ByteUtilsTest.java
-        ├── utils/TdxUtilsTest.java
-        ├── utils/AdjustmentUtilsTest.java
-        └── ExampleUsage.java
-```
-
-## Testing
+## 🧪 测试
 
 ```bash
-# Run all tests
+# 运行所有测试
 mvn test
 
-# Run specific test
+# 运行特定测试
 mvn test -Dtest=TdxFileReaderTest
 
-# Run with coverage
-mvn jacoco:report
+# 运行集成测试
+mvn test -Dtest=*IntegrationTest
 ```
 
-## Contributing
+## 📦 依赖
 
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a Pull Request
+| 依赖 | 版本 | 用途 |
+|------|------|------|
+| Netty | 4.1.100.Final | TCP通信 |
+| Spring Boot | 2.7.x | Web服务框架 |
+| Jackson | 2.15.2 | JSON处理 |
+| Caffeine | 2.9.3 | 本地缓存 |
+| picocli | 4.7.5 | 命令行工具 |
+| Lombok | 1.18.30 | 代码生成 |
+| Tablesaw | 0.43.1 | 数据分析 |
 
-## License
+## 🤝 贡献指南
 
-MIT License - see LICENSE file for details.
+1. Fork 本仓库
+2. 创建特性分支 (`git checkout -b feature/AmazingFeature`)
+3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
+4. 推送到分支 (`git push origin feature/AmazingFeature`)
+5. 创建 Pull Request
 
-## Acknowledgments
+## 📄 许可证
 
-- [mootdx](https://github.com/bopo/mootdx) - Original Python library
-- [pytdx](https://github.com/rainx/pytdx) - Low-level TDX protocol implementation
+本项目采用 [MIT](LICENSE) 许可证
 
-## Support
+## 🙏 致谢
 
-- GitHub Issues: [https://github.com/mootdx/mootdx-java/issues](https://github.com/mootdx/mootdx-java/issues)
-- Documentation: [https://mootdx.readthedocs.io](https://mootdx.readthedocs.io)
+- [mootdx](https://github.com/bopo/mootdx) - Python 版通达信数据读取库
+- [pytdx](https://github.com/rainx/pytdx) - TDX 协议底层实现
+
+## 📞 联系方式
+
+- GitHub Issues: [https://github.com/a304407493/mootdx-java/issues](https://github.com/a304407493/mootdx-java/issues)
+- 项目主页: [https://github.com/a304407493/mootdx-java](https://github.com/a304407493/mootdx-java)
+
+---
+
+<p align="center">如果这个项目对你有帮助，请给个 ⭐ Star 支持一下！</p>
