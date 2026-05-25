@@ -1,0 +1,6 @@
+#NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
+#Sat Mar 14 14:29:03 CST 2026
+https\://repo.maven.apache.org/maven2/.lastUpdated=1773271499458
+https\://maven.aliyun.com/repository/public/.lastUpdated=1773469743317
+http\://nexus.gjdigits.local/repository/gjsk-maven/.error=Could not transfer artifact org.apache.maven.plugins\:maven-resources-plugin\:pom\:2.6 from/to gjskmaven (http\://nexus.gjdigits.local/repository/gjsk-maven/)\: Transfer failed for http\://nexus.gjdigits.local/repository/gjsk-maven/org/apache/maven/plugins/maven-resources-plugin/2.6/maven-resources-plugin-2.6.pom
+00b91e4d452f59fdaa390241c9582e0acbcf8873@default-gjskmaven-http\://nexus.gjdigits.local/repository/gjsk-maven/.lastUpdated=1773271475753

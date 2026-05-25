@@ -1,0 +1,6 @@
+#NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
+#Sat Mar 14 14:29:12 CST 2026
+picocli-4.7.5.jar>central=
+picocli-4.7.5.pom>central=
+picocli-4.7.5.pom>aliyunmaven=
+picocli-4.7.5.jar>aliyunmaven=
