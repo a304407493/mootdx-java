@@ -1,6 +1,0 @@
-#NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
-#Sat Mar 14 14:29:12 CST 2026
-classgraph-4.8.60.jar>aliyunmaven=
-classgraph-4.8.60.jar>central=
-classgraph-4.8.60.pom>central=
-classgraph-4.8.60.pom>aliyunmaven=
