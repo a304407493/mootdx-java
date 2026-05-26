@@ -295,7 +295,31 @@ mvn test -Dtest=*IntegrationTest
 - [mootdx](https://github.com/bopo/mootdx) - Python 版通达信数据读取库
 - [pytdx](https://github.com/rainx/pytdx) - TDX 协议底层实现
 
-## 📞 联系方式
+## 👥 加入社区
+
+我们有一个活跃的开发者社区，欢迎你的加入！
+
+### 💬 微信群
+
+扫描下方二维码加入 **akshare和mootdx** 交流群，与其他开发者一起讨论：
+
+![微信群二维码](docs/images/wechat-group.png)
+
+> 如果二维码过期，请添加作者微信拉你入群
+
+### 👤 联系作者
+
+有任何问题或建议，欢迎添加作者微信：
+
+![个人微信二维码](docs/images/wechat-personal.png)
+
+### 🚀 参与开发
+
+我们非常欢迎你的贡献！无论是代码、文档、Bug 反馈还是新功能建议，都是对我们的大力支持。
+
+查看 [COMMUNITY.md](docs/COMMUNITY.md) 了解更多参与方式。
+
+## 📞 其他联系方式
 
 - GitHub Issues: [https://github.com/a304407493/mootdx-java/issues](https://github.com/a304407493/mootdx-java/issues)
 - 项目主页: [https://github.com/a304407493/mootdx-java](https://github.com/a304407493/mootdx-java)
@@ -303,3 +327,4 @@ mvn test -Dtest=*IntegrationTest
 ---
 
 <p align="center">如果这个项目对你有帮助，请给个 ⭐ Star 支持一下！</p>
+<p align="center">期待你的加入，一起打造更好的金融数据工具！🎉</p>
